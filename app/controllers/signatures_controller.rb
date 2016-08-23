@@ -11,7 +11,12 @@ class SignaturesController < ApplicationController
         if upperclassman_signed_in? and not Signature.exists?(freshman: freshman, signer: @current_upperclassman)
           Signature.create(freshman: freshman, signer: @current_upperclassman)
         elsif freshman_signed_in? and not Signature.exists?(freshman: freshman, signer: @current_freshman)
-          Signature.create(freshman: freshman, signer: @current_freshman)
+          if freshman == @current_freshman
+            # If freshman attempts to sign own packet
+            flash[:error] = "You cannot sign your own packet"
+          else
+            # If freshman attemps to sign other freshman's packet
+            Signature.create(freshman: freshman, signer: @current_freshman)
         else
           flash[:error] = "Unable to sign packet"
         end
